@@ -4,22 +4,23 @@ import subprocess
 def userInput():
     start_time = input(f'Enter the start time (hh:mm:ss)\n')
     end_time = input(f'Enter the end time (hh:mm:ss)\n')
-    presets = ['ultrafast', 'superfast', 'veryfast', 'faster', 'fast', 'medium', 'slow', 'slower', 'veryslow']
+    crf_value = input(f'Enter the quality value (CRF), lower value means higher quality but larger file size and vice versa. (default: 23): ')
 
-    print(f'Choose a quality preset :\n{presets}\n')
-    preset_choice = input(f'Enter your selected quality preset\n')
-    if preset_choice not in presets:
-        raise ValueError("Invalid quality preset.\n")
-    return start_time, end_time, preset_choice
+    if not crf_value:
+        crf_value = 23  # Use default if no input
+    else:
+        crf_value = int(crf_value)
 
-def cut_video(input_file, output_file, start_time, end_time, preset_choice,):
+    return start_time, end_time, crf_value
+
+def cut_video(input_file, output_file, start_time, end_time, crf_value):
     #very gay command construct
     export_command = [
         'ffmpeg', '-i', input_file,
         '-ss', start_time,
         '-to', end_time,
         '-c:v', 'libx264',
-        '-preset', preset_choice,
+        '-crf', str(crf_value),
         '-c:a', 'aac',
         output_file
     ]
@@ -41,9 +42,9 @@ def main():
     input_file = input_file.strip('"')
     output_file = output_file.strip('"')
 
-    start_time, end_time, preset_choice = userInput()
+    start_time, end_time, crf_value = userInput()
 
-    cut_video(input_file, output_file, start_time, end_time, preset_choice,)
+    cut_video(input_file, output_file, start_time, end_time, crf_value)
 
 if __name__ == '__main__':
     main()
